@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import re
 import sys
 import os
+import json
 
 import reflowrestclient.utils as rest
 
@@ -27,6 +28,13 @@ elif sys.platform == 'linux2':
     ICON_PATH = None  # haven't figured out icons on linux yet : (
 else:
     sys.exit("Your operating system is not supported.")
+
+user_settings_path = "/".join(
+    [
+        os.path.expanduser('~'),
+        '.reflow_download_client'
+    ]
+)
 
 BACKGROUND_COLOR = '#ededed'
 INACTIVE_BACKGROUND_COLOR = '#e2e2e2'
@@ -74,8 +82,16 @@ class Application(Tkinter.Frame):
 
     def __init__(self, master):
 
-        self.host = None
-        self.username = None
+        # check for previously used host & username for this user
+        try:
+            user_settings = json.load(open(user_settings_path, 'r'))
+            self.host = user_settings['host']
+            self.username = user_settings['username']
+        except Exception, e:
+            self.host = None
+            self.username = None
+
+        # Neither the user's token nor their password are cached
         self.token = None
 
         # Using the names (project, site, etc.) as the key, pk as the value
@@ -160,6 +176,19 @@ class Application(Tkinter.Frame):
                     'Login Failed',
                     'Are the hostname, username, and password are correct?')
                 return
+
+            # if we get here, user was authenticated, cache the host/username
+            try:
+                user_settings = {
+                    'host': host_text,
+                    'username': self.username
+                }
+                user_settings_fh = open(user_settings_path, 'w')
+                json.dump(user_settings, user_settings_fh)
+            except Exception, e:
+                # well, we tried, but don't stop the application
+                pass
+
             self.login_frame.destroy()
             self.master.unbind('<Return>')
             self.load_main_frame()
@@ -176,12 +205,16 @@ class Application(Tkinter.Frame):
             text='Hostname',
             bg=BACKGROUND_COLOR,
             width=8,
-            anchor='e')
+            anchor='e'
+        )
         host_label.pack(side='left')
         host_entry = Tkinter.Entry(
             host_entry_frame,
             highlightbackground=BACKGROUND_COLOR,
-            width=24)
+            width=24
+        )
+        if self.host is not None:
+            host_entry.insert(Tkinter.END, self.host)
         host_entry.pack(padx=PAD_SMALL)
         host_entry_frame.pack(pady=PAD_SMALL)
 
@@ -191,43 +224,53 @@ class Application(Tkinter.Frame):
             text='Username',
             bg=BACKGROUND_COLOR,
             width=8,
-            anchor='e')
+            anchor='e'
+        )
         user_label.pack(side='left')
         user_entry = Tkinter.Entry(
             user_entry_frame,
             highlightbackground=BACKGROUND_COLOR,
-            width=24)
+            width=24
+        )
+        if self.username is not None:
+            user_entry.insert(Tkinter.END, self.username)
         user_entry.pack(padx=PAD_SMALL)
         user_entry_frame.pack(pady=PAD_SMALL)
 
         password_entry_frame = Tkinter.Frame(
             self.login_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         password_label = Tkinter.Label(
             password_entry_frame,
             text='Password',
             bg=BACKGROUND_COLOR,
             width=8,
-            anchor='e')
+            anchor='e'
+        )
         password_label.pack(side='left')
         password_entry = Tkinter.Entry(
             password_entry_frame,
             show='*',
             highlightbackground=BACKGROUND_COLOR,
-            width=24)
+            width=24
+        )
         password_entry.pack(padx=PAD_SMALL)
         password_entry_frame.pack(pady=PAD_SMALL)
 
         login_button_frame = Tkinter.Frame(
             self.login_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         login_button_label = Tkinter.Label(
             login_button_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         login_button = ttk.Button(
             login_button_label,
             text='Login',
-            command=login)
+            command=login
+        )
         login_button.pack()
         login_button_label.pack(side='right')
         login_button_frame.pack(fill='x')
@@ -246,7 +289,8 @@ class Application(Tkinter.Frame):
 
         top_frame = Tkinter.Frame(
             main_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         top_frame.pack(
             fill='x',
             expand=False,
@@ -363,7 +407,8 @@ class Application(Tkinter.Frame):
         # overall project frame
         project_frame = Tkinter.Frame(
             metadata_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
 
         # project label frame
         project_chooser_label_frame = Tkinter.Frame(
@@ -374,7 +419,8 @@ class Application(Tkinter.Frame):
             text='Project:',
             bg=BACKGROUND_COLOR,
             width=LABEL_WIDTH,
-            anchor=Tkinter.E)
+            anchor=Tkinter.E
+        )
         project_chooser_label.pack(side='left')
         project_chooser_label_frame.pack(side='left', fill='x')
 
@@ -385,10 +431,12 @@ class Application(Tkinter.Frame):
         self.project_menu = Tkinter.OptionMenu(
             project_chooser_frame,
             self.project_selection,
-            '')
+            ''
+        )
         self.project_menu.config(
             bg=BACKGROUND_COLOR,
-            width=36)
+            width=36
+        )
         self.project_menu.pack(fill='x', expand=True)
         project_chooser_frame.pack(fill='x', expand=True)
 
@@ -400,24 +448,28 @@ class Application(Tkinter.Frame):
         # site label frame
         site_chooser_label_frame = Tkinter.Frame(
             site_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         site_chooser_label = Tkinter.Label(
             site_chooser_label_frame,
             text='Site:',
             bg=BACKGROUND_COLOR,
             width=LABEL_WIDTH,
-            anchor=Tkinter.E)
+            anchor=Tkinter.E
+        )
         site_chooser_label.pack(side='left')
         site_chooser_label_frame.pack(side='left', fill='x')
 
         # site chooser listbox frame
         site_chooser_frame = Tkinter.Frame(
             site_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         self.site_menu = Tkinter.OptionMenu(
             site_chooser_frame,
             self.site_selection,
-            '')
+            ''
+        )
         self.site_menu.config(bg=BACKGROUND_COLOR)
         self.site_menu.pack(fill='x', expand=True)
         site_chooser_frame.pack(fill='x', expand=True)
@@ -430,24 +482,28 @@ class Application(Tkinter.Frame):
         # subject label frame
         subject_chooser_label_frame = Tkinter.Frame(
             subject_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         subject_chooser_label = Tkinter.Label(
             subject_chooser_label_frame,
             text='Subject:',
             bg=BACKGROUND_COLOR,
             width=LABEL_WIDTH,
-            anchor=Tkinter.E)
+            anchor=Tkinter.E
+        )
         subject_chooser_label.pack(side='left')
         subject_chooser_label_frame.pack(side='left', fill='x')
 
         # subject chooser listbox frame
         subject_chooser_frame = Tkinter.Frame(
             subject_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         self.subject_menu = Tkinter.OptionMenu(
             subject_chooser_frame,
             self.subject_selection,
-            '')
+            ''
+        )
         self.subject_menu.config(bg=BACKGROUND_COLOR)
         self.subject_menu.pack(fill='x', expand=True)
         subject_chooser_frame.pack(fill='x', expand=True)
@@ -460,13 +516,15 @@ class Application(Tkinter.Frame):
         # visit label frame
         visit_chooser_label_frame = Tkinter.Frame(
             visit_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         visit_chooser_label = Tkinter.Label(
             visit_chooser_label_frame,
             text='Visit:',
             bg=BACKGROUND_COLOR,
             width=LABEL_WIDTH,
-            anchor=Tkinter.E)
+            anchor=Tkinter.E
+        )
         visit_chooser_label.pack(side='left')
         visit_chooser_label_frame.pack(side='left', fill='x')
 
@@ -475,7 +533,8 @@ class Application(Tkinter.Frame):
         self.visit_menu = Tkinter.OptionMenu(
             visit_chooser_frame,
             self.visit_selection,
-            '')
+            ''
+        )
         self.visit_menu.config(bg=BACKGROUND_COLOR)
         self.visit_menu.pack(fill='x', expand=True)
         visit_chooser_frame.pack(fill='x', expand=True)
@@ -485,29 +544,34 @@ class Application(Tkinter.Frame):
         # overall panel_template frame
         panel_template_frame = Tkinter.Frame(
             metadata_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
 
         # panel_template label frame
         panel_template_chooser_label_frame = Tkinter.Frame(
             panel_template_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         panel_template_chooser_label = Tkinter.Label(
             panel_template_chooser_label_frame,
             text='Panel Template:',
             bg=BACKGROUND_COLOR,
             width=LABEL_WIDTH,
-            anchor=Tkinter.E)
+            anchor=Tkinter.E
+        )
         panel_template_chooser_label.pack(side='left')
         panel_template_chooser_label_frame.pack(side='left', fill='x')
 
         # panel_template chooser listbox frame
         panel_template_chooser_frame = Tkinter.Frame(
             panel_template_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         self.panel_template_menu = Tkinter.OptionMenu(
             panel_template_chooser_frame,
             self.panel_template_selection,
-            '')
+            ''
+        )
         self.panel_template_menu.config(bg=BACKGROUND_COLOR)
         self.panel_template_menu.pack(fill='x', expand=True)
         panel_template_chooser_frame.pack(fill='x', expand=True)
@@ -517,29 +581,34 @@ class Application(Tkinter.Frame):
         # overall stimulation frame
         stimulation_frame = Tkinter.Frame(
             metadata_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
 
         # stimulation label frame
         stimulation_chooser_label_frame = Tkinter.Frame(
             stimulation_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         stimulation_chooser_label = Tkinter.Label(
             stimulation_chooser_label_frame,
             text='Stimulation:',
             bg=BACKGROUND_COLOR,
             width=LABEL_WIDTH,
-            anchor=Tkinter.E)
+            anchor=Tkinter.E
+        )
         stimulation_chooser_label.pack(side='left')
         stimulation_chooser_label_frame.pack(side='left', fill='x')
 
         # stimulation chooser listbox frame
         stimulation_chooser_frame = Tkinter.Frame(
             stimulation_frame,
-            bg=BACKGROUND_COLOR)
+            bg=BACKGROUND_COLOR
+        )
         self.stimulation_menu = Tkinter.OptionMenu(
             stimulation_chooser_frame,
             self.stimulation_selection,
-            '')
+            ''
+        )
         self.stimulation_menu.config(bg=BACKGROUND_COLOR)
         self.stimulation_menu.pack(fill='x', expand=True)
         stimulation_chooser_frame.pack(fill='x', expand=True)
@@ -635,7 +704,8 @@ class Application(Tkinter.Frame):
             self.project_menu['menu'].add_command(
                 label=project_name,
                 command=lambda value=project_name:
-                self.project_selection.set(value))
+                self.project_selection.set(value)
+            )
 
     def load_project_sites(self, project_id):
         self.site_menu['menu'].delete(0, 'end')
@@ -647,7 +717,8 @@ class Application(Tkinter.Frame):
             response = rest.get_sites(
                 self.host,
                 self.token,
-                project_pk=project_id)
+                project_pk=project_id
+            )
         except Exception, e:
             print e
 
@@ -660,7 +731,8 @@ class Application(Tkinter.Frame):
             self.site_menu['menu'].add_command(
                 label=site_name,
                 command=lambda value=site_name:
-                self.site_selection.set(value))
+                self.site_selection.set(value)
+            )
 
     def load_project_subjects(self, project_id):
         self.subject_menu['menu'].delete(0, 'end')
@@ -672,7 +744,8 @@ class Application(Tkinter.Frame):
             response = rest.get_subjects(
                 self.host,
                 self.token,
-                project_pk=project_id)
+                project_pk=project_id
+            )
         except Exception, e:
             print e
 
@@ -685,7 +758,8 @@ class Application(Tkinter.Frame):
             self.subject_menu['menu'].add_command(
                 label=subject_code,
                 command=lambda value=subject_code:
-                self.subject_selection.set(value))
+                self.subject_selection.set(value)
+            )
 
     def load_project_visits(self, project_id):
         self.visit_menu['menu'].delete(0, 'end')
@@ -697,7 +771,8 @@ class Application(Tkinter.Frame):
             response = rest.get_visit_types(
                 self.host,
                 self.token,
-                project_pk=project_id)
+                project_pk=project_id
+            )
         except Exception, e:
             print e
 
@@ -710,7 +785,8 @@ class Application(Tkinter.Frame):
             self.visit_menu['menu'].add_command(
                 label=visit_type_name,
                 command=lambda value=visit_type_name:
-                self.visit_selection.set(value))
+                self.visit_selection.set(value)
+            )
 
     def load_project_stimulations(self, project_id):
         self.stimulation_menu['menu'].delete(0, 'end')
@@ -721,7 +797,8 @@ class Application(Tkinter.Frame):
             response = rest.get_stimulations(
                 self.host,
                 self.token,
-                project_pk=project_id)
+                project_pk=project_id
+            )
         except Exception, e:
             print e
             return
@@ -735,7 +812,8 @@ class Application(Tkinter.Frame):
             self.stimulation_menu['menu'].add_command(
                 label=stimulation,
                 command=lambda value=stimulation:
-                self.stimulation_selection.set(value))
+                self.stimulation_selection.set(value)
+            )
 
     def load_project_panel_templates(self, project_id):
         self.panel_template_menu['menu'].delete(0, 'end')
@@ -747,7 +825,8 @@ class Application(Tkinter.Frame):
             response = rest.get_project_panels(
                 self.host,
                 self.token,
-                project_pk=project_id)
+                project_pk=project_id
+            )
         except Exception, e:
             print e
 
@@ -760,7 +839,8 @@ class Application(Tkinter.Frame):
             self.panel_template_menu['menu'].add_command(
                 label=panel_name,
                 command=lambda value=panel_name:
-                self.panel_template_selection.set(value))
+                self.panel_template_selection.set(value)
+            )
 
     def update_metadata(*args):
         self = args[0]
