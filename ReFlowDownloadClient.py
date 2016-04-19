@@ -272,14 +272,31 @@ class Application(Tkinter.Frame):
         )
 
         # Action buttons all go in top frame
+        apply_filters_button = ttk.Button(
+            top_frame,
+            text='Apply Filters',
+            command=self.apply_filters
+        )
+
+        apply_filters_button.pack(side='left')
+
+        download_selected_button = ttk.Button(
+            top_frame,
+            text='Download Selected',
+            command=self.download_selected
+        )
+
+        download_selected_button.pack(side='right')
+
         file_clear_all_button = ttk.Button(
             top_frame,
             text='Select All',
             command=self.select_all_files
         )
 
-        file_clear_all_button.pack(side='right')
+        file_clear_all_button.pack(side='right', padx=(0, PAD_MEDIUM))
 
+        # middle frames hold the FCS filters, download options, & file list
         middle_left_frame = Tkinter.Frame(
             middle_frame,
             bg=BACKGROUND_COLOR
@@ -584,10 +601,16 @@ class Application(Tkinter.Frame):
     def _on_mousewheel(self, event):
         self.file_list_canvas.yview_scroll(-event.delta, "units")
 
+    def apply_filters(self):
+        pass
+
     def select_all_files(self):
         for k, v in self.file_list_canvas.children.items():
             if isinstance(v, MyCheckbutton):
                 v.mark_checked()
+
+    def download_selected(self):
+        pass
 
     def load_user_projects(self):
         try:
