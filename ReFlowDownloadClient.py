@@ -732,7 +732,7 @@ class Application(Tkinter.Frame):
             return
 
         for result in response['data']:
-            self.panel_template_dict[result['name']] = result['id']
+            self.panel_template_dict[result['panel_name']] = result['id']
         for panel_name in sorted(self.panel_template_dict.keys()):
             self.panel_template_menu['menu'].add_command(
                 label=panel_name,
@@ -750,8 +750,6 @@ class Application(Tkinter.Frame):
             self.load_project_visits(self.project_dict[option_value])
             self.load_project_panel_templates(self.project_dict[option_value])
             self.load_project_stimulations(self.project_dict[option_value])
-
-        self.update_add_to_queue_button_state()
 
 root = Tkinter.Tk()
 app = Application(root)
