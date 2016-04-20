@@ -671,6 +671,56 @@ class Application(Tkinter.Frame):
         self.file_list_canvas.yview_scroll(-event.delta, "units")
 
     def apply_filters(self):
+        project_name = self.project_selection.get()
+        if project_name in self.project_dict:
+            project_id = self.project_dict[project_name]
+        else:
+            # if we don't get a project ID then there's nothing to do
+            return
+
+        site_name = self.site_selection.get()
+        if site_name in self.site_dict:
+            site_id = self.site_dict[site_name]
+        else:
+            site_id = None
+
+        subject_name = self.subject_selection.get()
+        if subject_name in self.subject_dict:
+            subject_id = self.subject_dict[subject_name]
+        else:
+            subject_id = None
+
+        visit_name = self.visit_selection.get()
+        if visit_name in self.visit_dict:
+            visit_id = self.visit_dict[visit_name]
+        else:
+            visit_id = None
+
+        panel_template_name = self.panel_template_selection.get()
+        if panel_template_name in self.panel_template_dict:
+            panel_template_id = self.panel_template_dict[panel_template_name]
+        else:
+            panel_template_id = None
+
+        stimulation_name = self.stimulation_selection.get()
+        if stimulation_name in self.stimulation_dict:
+            stimulation_id = self.stimulation_dict[stimulation_name]
+        else:
+            stimulation_id = None
+
+        samples = rest.get_samples(
+            self.host,
+            self.token,
+            project_pk=project_id,
+            site_pk=site_id,
+            subject_pk=subject_id,
+            visit_pk=visit_id,
+            project_panel_pk=panel_template_id,
+            stimulation_pk=stimulation_id
+        )
+
+        # TODO: populate FCS sample list & check boxes with our samples
+
         pass
 
     def select_all_files(self):
