@@ -57,15 +57,16 @@ LABEL_WIDTH = 16
 
 
 class MyCheckbutton(Tkinter.Checkbutton):
-    def __init__(self, *args, **kwargs):
-        # We need to save the full path to populate the tree item later
-        # Pop the value b/c the parent init is not expecting the kwarg
-        self.file_path = kwargs.pop('file_path')
+    def __init__(self, sample_id, *args, **kwargs):
+        # Save the sample ID
+        self.sample_id = sample_id
 
         # we create checkboxes dynamically and need to control the value
         # so we need to access the widget's value using our own attribute
         self.var = kwargs.get('variable', Tkinter.IntVar())
         kwargs['variable'] = self.var
+        kwargs['bg'] = BACKGROUND_COLOR
+        kwargs['highlightthickness'] = 0
         Tkinter.Checkbutton.__init__(self, *args, **kwargs)
 
     def is_checked(self):
@@ -332,13 +333,23 @@ class Application(Tkinter.Frame):
 
         download_selected_button.pack(side='right')
 
+        # Clear all button
         file_clear_all_button = ttk.Button(
+            top_frame,
+            text='Clear All',
+            command=self.clear_all_files
+        )
+
+        file_clear_all_button.pack(side='right', padx=(0, PAD_MEDIUM))
+
+        # Select all button
+        file_select_all_button = ttk.Button(
             top_frame,
             text='Select All',
             command=self.select_all_files
         )
 
-        file_clear_all_button.pack(side='right', padx=(0, PAD_MEDIUM))
+        file_select_all_button.pack(side='right', padx=(0, PAD_MEDIUM))
 
         # middle frames hold the FCS filters, download options, & file list
         middle_left_frame = Tkinter.Frame(
@@ -377,7 +388,7 @@ class Application(Tkinter.Frame):
             anchor='n',
             pady=(0, PAD_LARGE)
         )
-        metadata_label_frame.config(text="FCS Metadata Filters")
+        metadata_label_frame.config(text="FCS Sample Filters")
 
         # Metadata frame - for choosing project/subject/site etc.
         metadata_frame = Tkinter.Frame(
@@ -638,7 +649,8 @@ class Application(Tkinter.Frame):
             file_list_frame,
             yscrollcommand=file_scroll_bar.set,
             relief='flat',
-            borderwidth=0
+            borderwidth=0,
+            bg=BACKGROUND_COLOR
         )
         self.file_list_canvas.bind('<MouseWheel>', self._on_mousewheel)
         file_scroll_bar.config(command=self.file_list_canvas.yview)
@@ -719,14 +731,44 @@ class Application(Tkinter.Frame):
             stimulation_pk=stimulation_id
         )
 
-        # TODO: populate FCS sample list & check boxes with our samples
+        if 'data' not in samples:
+            return
+        else:
+            samples = samples['data']
 
-        pass
+        # clear the canvas
+        self.file_list_canvas.delete(Tkinter.ALL)
+
+        for i, s in enumerate(samples):
+            cb = MyCheckbutton(
+                s['id'],
+                self.file_list_canvas,
+                text=os.path.basename(s['original_filename'])
+            )
+
+            # bind to our canvas mouse function
+            # to keep scrolling working when the mouse is over a checkbox
+            cb.bind('<MouseWheel>', self._on_mousewheel)
+            self.file_list_canvas.create_window(
+                PAD_MEDIUM,
+                PAD_LARGE + (24 * i),
+                anchor='nw',
+                window=cb
+            )
+
+        # update scroll region
+        self.file_list_canvas.config(
+            scrollregion=(0, 0, 1000, len(samples) * 20))
 
     def select_all_files(self):
         for k, v in self.file_list_canvas.children.items():
             if isinstance(v, MyCheckbutton):
                 v.mark_checked()
+
+    def clear_all_files(self):
+        for k, v in self.file_list_canvas.children.items():
+            if isinstance(v, MyCheckbutton):
+                v.mark_unchecked()
 
     def download_selected(self):
         pass
