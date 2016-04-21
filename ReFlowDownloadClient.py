@@ -736,6 +736,9 @@ class Application(Tkinter.Frame):
         else:
             samples = samples['data']
 
+        # sort samples list by original filename
+        samples = sorted(samples, key=lambda k: k['original_filename'])
+
         # clear the canvas
         self.file_list_canvas.delete(Tkinter.ALL)
 
