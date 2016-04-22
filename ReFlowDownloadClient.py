@@ -36,6 +36,13 @@ user_settings_path = "/".join(
     ]
 )
 
+default_download_parent_dir = "/".join(
+    [
+        os.path.expanduser('~'),
+        'Downloads'
+    ]
+)
+
 BACKGROUND_COLOR = '#ededed'
 INACTIVE_BACKGROUND_COLOR = '#e2e2e2'
 INACTIVE_FOREGROUND_COLOR = '#767676'
@@ -126,6 +133,9 @@ class Application(Tkinter.Frame):
 
         self.panel_template_menu = None
         self.panel_template_selection = Tkinter.StringVar()
+
+        # download options
+        self.download_parent_dir = default_download_parent_dir
 
         # can't call super on old-style class, call parent init directly
         Tkinter.Frame.__init__(self, master)
@@ -413,6 +423,32 @@ class Application(Tkinter.Frame):
             anchor='n'
         )
         download_options_frame.config(text="Download Options")
+
+        # Download options
+        download_parent_dir_frame = Tkinter.Frame(
+            download_options_frame,
+            bg=BACKGROUND_COLOR
+        )
+        download_parent_dir_label = Tkinter.Label(
+            download_parent_dir_frame,
+            text='Download Parent Directory: ',
+            bg=BACKGROUND_COLOR,
+            width=8,
+            anchor='e'
+        )
+        download_parent_dir_label.pack(side='left')
+        download_parent_dir_entry = Tkinter.Entry(
+            download_parent_dir_frame,
+            highlightbackground=BACKGROUND_COLOR,
+            width=24
+        )
+        if self.download_parent_dir is not None:
+            download_parent_dir_entry.insert(
+                Tkinter.END,
+                self.download_parent_dir)
+
+        download_parent_dir_entry.pack(padx=PAD_SMALL)
+        download_parent_dir_frame.pack(pady=PAD_SMALL)
 
         # overall project frame
         project_frame = Tkinter.Frame(
