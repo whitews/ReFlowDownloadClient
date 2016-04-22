@@ -426,26 +426,43 @@ class Application(Tkinter.Frame):
         download_options_frame.config(text="Download Options")
 
         # Download options
-        download_parent_dir_frame = Tkinter.Frame(
+        download_dir_label_frame = Tkinter.Frame(
             download_options_frame,
             bg=BACKGROUND_COLOR
         )
         download_parent_dir_label = Tkinter.Label(
-            download_parent_dir_frame,
-            text='Download Parent Directory: ',
+            download_dir_label_frame,
+            text='Download Parent Folder: ',
             bg=BACKGROUND_COLOR,
-            width=8,
-            anchor='e'
+            width=28,
+            anchor=Tkinter.W
         )
         download_parent_dir_label.pack(side='left')
+        download_dir_label_frame.pack(
+            padx=PAD_MEDIUM,
+            pady=(PAD_LARGE, 0),
+            fill='x'
+        )
+
+        download_dir_entry_frame = Tkinter.Frame(
+            download_options_frame,
+            bg=BACKGROUND_COLOR
+        )
         download_parent_dir_entry = Tkinter.Entry(
-            download_parent_dir_frame,
+            download_dir_entry_frame,
             textvariable=self.download_parent_dir,
             highlightbackground=BACKGROUND_COLOR,
-            width=24
+            width=42
         )
-        download_parent_dir_entry.pack(padx=PAD_SMALL)
-        download_parent_dir_frame.pack(pady=PAD_SMALL)
+        download_parent_dir_entry.pack(padx=PAD_SMALL, side='left')
+        choose_download_parent_dir_button = ttk.Button(
+            download_dir_entry_frame,
+            text='Change Folder',
+            command=self.choose_download_parent_dir
+        )
+        choose_download_parent_dir_button.pack(side='left')
+        download_dir_entry_frame.pack(pady=PAD_SMALL, fill='x')
+
 
         # overall project frame
         project_frame = Tkinter.Frame(
@@ -805,6 +822,9 @@ class Application(Tkinter.Frame):
         for k, v in self.file_list_canvas.children.items():
             if isinstance(v, MyCheckbutton):
                 v.mark_unchecked()
+
+    def choose_download_parent_dir(self):
+        pass
 
     def download_selected(self):
         for k, v in self.file_list_canvas.children.items():
