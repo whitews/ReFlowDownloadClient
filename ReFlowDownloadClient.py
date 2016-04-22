@@ -605,7 +605,13 @@ class Application(Tkinter.Frame):
         clear_project_filter_button.pack(side='left')
         project_chooser_frame.pack(fill='x', expand=True)
 
-        project_frame.pack(side='top', fill='x', expand=True)
+        project_frame.pack(
+            side='top',
+            fill='x',
+            expand=True,
+            padx=PAD_MEDIUM,
+            pady=PAD_SMALL
+        )
 
         # overall site frame
         site_frame = Tkinter.Frame(metadata_frame, bg=BACKGROUND_COLOR)
@@ -645,7 +651,13 @@ class Application(Tkinter.Frame):
         clear_site_filter_button.pack(side='left')
         site_chooser_frame.pack(fill='x', expand=True)
 
-        site_frame.pack(side='top', fill='x', expand=True)
+        site_frame.pack(
+            side='top',
+            fill='x',
+            expand=True,
+            padx=PAD_MEDIUM,
+            pady=PAD_SMALL
+        )
 
         # overall subject frame
         subject_frame = Tkinter.Frame(metadata_frame, bg=BACKGROUND_COLOR)
@@ -685,7 +697,13 @@ class Application(Tkinter.Frame):
         clear_subject_filter_button.pack(side='left')
         subject_chooser_frame.pack(fill='x', expand=True)
 
-        subject_frame.pack(side='top', fill='x', expand=True)
+        subject_frame.pack(
+            side='top',
+            fill='x',
+            expand=True,
+            padx=PAD_MEDIUM,
+            pady=PAD_SMALL
+        )
 
         # overall visit frame
         visit_frame = Tkinter.Frame(metadata_frame, bg=BACKGROUND_COLOR)
@@ -722,7 +740,13 @@ class Application(Tkinter.Frame):
         clear_visit_filter_button.pack(side='left')
         visit_chooser_frame.pack(fill='x', expand=True)
 
-        visit_frame.pack(side='top', fill='x', expand=True)
+        visit_frame.pack(
+            side='top',
+            fill='x',
+            expand=True,
+            padx=PAD_MEDIUM,
+            pady=PAD_SMALL
+        )
 
         # overall panel_template frame
         panel_template_frame = Tkinter.Frame(
@@ -765,7 +789,13 @@ class Application(Tkinter.Frame):
         clear_panel_template_filter_button.pack(side='left')
         panel_template_chooser_frame.pack(fill='x', expand=True)
 
-        panel_template_frame.pack(side='top', fill='x', expand=True)
+        panel_template_frame.pack(
+            side='top',
+            fill='x',
+            expand=True,
+            padx=PAD_MEDIUM,
+            pady=PAD_SMALL
+        )
 
         # overall stimulation frame
         stimulation_frame = Tkinter.Frame(
@@ -808,7 +838,13 @@ class Application(Tkinter.Frame):
         clear_stimulation_filter_button.pack(side='left')
         stimulation_chooser_frame.pack(fill='x', expand=True)
 
-        stimulation_frame.pack(side='top', fill='x', expand=True)
+        stimulation_frame.pack(
+            side='top',
+            fill='x',
+            expand=True,
+            padx=PAD_MEDIUM,
+            pady=PAD_SMALL
+        )
 
         self.load_user_projects()
 
