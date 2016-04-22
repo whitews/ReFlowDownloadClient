@@ -84,11 +84,12 @@ class Application(Tkinter.Frame):
     def __init__(self, master):
 
         # check for previously used host & username for this user
+        # noinspection PyBroadException
         try:
             user_settings = json.load(open(user_settings_path, 'r'))
             self.host = user_settings['host']
             self.username = user_settings['username']
-        except Exception, e:
+        except Exception:
             self.host = None
             self.username = None
 
@@ -176,6 +177,7 @@ class Application(Tkinter.Frame):
                 return
 
             # if we get here, user was authenticated, cache the host/username
+            # noinspection PyBroadException
             try:
                 user_settings = {
                     'host': host_text,
@@ -183,7 +185,7 @@ class Application(Tkinter.Frame):
                 }
                 user_settings_fh = open(user_settings_path, 'w')
                 json.dump(user_settings, user_settings_fh)
-            except Exception, e:
+            except Exception:
                 # well, we tried, but don't stop the application
                 pass
 
