@@ -1,6 +1,7 @@
 import Tkinter
 import ttk
 import tkMessageBox
+import tkFileDialog
 from PIL import Image, ImageTk
 import re
 import sys
@@ -826,7 +827,10 @@ class Application(Tkinter.Frame):
                 v.mark_unchecked()
 
     def choose_download_parent_dir(self):
-        pass
+        chosen_dir = tkFileDialog.askdirectory(
+            initialdir=self.download_parent_dir.get()
+        )
+        self.download_parent_dir.set(chosen_dir)
 
     def download_selected(self):
         for k, v in self.file_list_canvas.children.items():
