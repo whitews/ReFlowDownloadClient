@@ -743,6 +743,7 @@ class Application(Tkinter.Frame):
         self.file_list_canvas.delete(Tkinter.ALL)
 
         for i, s in enumerate(samples):
+            # TODO: need to update MyCheckButton to save all sample metadata
             cb = MyCheckbutton(
                 s['id'],
                 self.file_list_canvas,
@@ -774,7 +775,10 @@ class Application(Tkinter.Frame):
                 v.mark_unchecked()
 
     def download_selected(self):
-        pass
+        for k, v in self.file_list_canvas.children.items():
+            if isinstance(v, MyCheckbutton):
+                if v.is_checked() and v.cget('state') != Tkinter.DISABLED:
+                    # TODO: call REST API download
 
     def load_user_projects(self):
         try:
