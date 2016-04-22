@@ -873,6 +873,23 @@ class Application(Tkinter.Frame):
             bg=BACKGROUND_COLOR
         )
         self.file_list_canvas.bind('<MouseWheel>', self._on_mousewheel)
+
+        # for linux
+        self.file_list_canvas.bind(
+            '<Button-4>',
+            lambda event: self.file_list_canvas.yview_scroll(
+                -1,
+                'units'
+            )
+        )
+        self.file_list_canvas.bind(
+            '<Button-5>',
+            lambda event: self.file_list_canvas.yview_scroll(
+                1,
+                'units'
+            )
+        )
+
         file_scroll_bar.config(command=self.file_list_canvas.yview)
         file_scroll_bar.pack(side='right', fill='y')
         self.file_list_canvas.pack(
@@ -975,6 +992,23 @@ class Application(Tkinter.Frame):
             # bind to our canvas mouse function
             # to keep scrolling working when the mouse is over a checkbox
             cb.bind('<MouseWheel>', self._on_mousewheel)
+
+            # for linux
+            cb.bind(
+                '<Button-4>',
+                lambda event: self.file_list_canvas.yview_scroll(
+                    -1,
+                    'units'
+                )
+            )
+            cb.bind(
+                '<Button-5>',
+                lambda event: self.file_list_canvas.yview_scroll(
+                    1,
+                    'units'
+                )
+            )
+
             self.file_list_canvas.create_window(
                 PAD_MEDIUM,
                 PAD_LARGE + (24 * i),
@@ -1046,6 +1080,10 @@ class Application(Tkinter.Frame):
         self.download_parent_dir.set(chosen_dir)
 
     def download_selected(self):
+        parent_dir = self.download_parent_dir.get()
+        download_structure = self.download_structure.get()
+        download_version = self.download_version
+
         for k, v in self.file_list_canvas.children.items():
             if isinstance(v, MyCheckbutton):
                 if v.is_checked() and v.cget('state') != Tkinter.DISABLED:
