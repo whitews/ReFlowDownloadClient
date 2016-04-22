@@ -46,7 +46,8 @@ default_download_parent_dir = "/".join(
 
 download_structure_options = [
     ('Flat', 'flat'),
-    ('Nested', 'nested')
+    ('Nested - Project / Site / Visit', 'nested_psv'),
+    ('Nested - Project / Visit / Site', 'nested_pvs')
 ]
 
 download_version_options = [
