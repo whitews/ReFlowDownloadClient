@@ -460,7 +460,7 @@ class Application(Tkinter.Frame):
         )
         download_parent_dir_label.pack(side='left')
         download_dir_label_frame.pack(
-            padx=PAD_MEDIUM,
+            padx=PAD_LARGE,
             pady=(PAD_LARGE, 0),
             fill='x'
         )
@@ -482,7 +482,11 @@ class Application(Tkinter.Frame):
             command=self.choose_download_parent_dir
         )
         choose_download_parent_dir_button.pack(side='left')
-        download_dir_entry_frame.pack(pady=PAD_SMALL, fill='x')
+        download_dir_entry_frame.pack(
+            padx=PAD_LARGE,
+            pady=PAD_SMALL,
+            fill='x'
+        )
 
         download_structure_label_frame = Tkinter.Frame(
             download_options_frame,
@@ -497,7 +501,7 @@ class Application(Tkinter.Frame):
         )
         download_structure_label.pack(side='left')
         download_structure_label_frame.pack(
-            padx=PAD_MEDIUM,
+            padx=PAD_LARGE,
             pady=(PAD_LARGE, 0),
             fill='x'
         )
@@ -516,7 +520,7 @@ class Application(Tkinter.Frame):
             )
             dl_radio_button.pack(anchor=Tkinter.W)
         download_structure_options_frame.pack(
-            padx=PAD_MEDIUM,
+            padx=PAD_LARGE,
             pady=(PAD_LARGE, 0),
             fill='x'
         )
@@ -534,7 +538,7 @@ class Application(Tkinter.Frame):
         )
         download_version_label.pack(side='left')
         download_version_label_frame.pack(
-            padx=PAD_MEDIUM,
+            padx=PAD_LARGE,
             pady=(PAD_LARGE, 0),
             fill='x'
         )
@@ -553,7 +557,7 @@ class Application(Tkinter.Frame):
             )
             dl_radio_button.pack(anchor=Tkinter.W)
         download_version_options_frame.pack(
-            padx=PAD_MEDIUM,
+            padx=PAD_LARGE,
             pady=(PAD_LARGE, 0),
             fill='x'
         )
