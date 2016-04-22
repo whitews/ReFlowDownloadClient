@@ -106,9 +106,6 @@ class Application(Tkinter.Frame):
         self.panel_template_dict = dict()
         self.stimulation_dict = dict()
 
-        # dict of ChosenFile objects, key is file path, value is ChosenFile
-        self.file_dict = dict()
-
         # start the metadata menus
         self.project_menu = None
         self.project_selection = Tkinter.StringVar()
@@ -779,6 +776,7 @@ class Application(Tkinter.Frame):
             if isinstance(v, MyCheckbutton):
                 if v.is_checked() and v.cget('state') != Tkinter.DISABLED:
                     # TODO: call REST API download
+                    pass
 
     def load_user_projects(self):
         try:
