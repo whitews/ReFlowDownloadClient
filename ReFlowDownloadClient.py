@@ -49,6 +49,12 @@ download_structure_options = [
     ('Nested', 'nested')
 ]
 
+download_version_options = [
+    ('Clean', 'clean'),
+    ('Original', 'original'),
+    ('Both', 'both')
+]
+
 BACKGROUND_COLOR = '#ededed'
 INACTIVE_BACKGROUND_COLOR = '#e2e2e2'
 INACTIVE_FOREGROUND_COLOR = '#767676'
@@ -146,6 +152,10 @@ class Application(Tkinter.Frame):
         self.download_structure = Tkinter.StringVar()
         # default output structure is 'flat'
         self.download_structure.set('flat')
+        # download version to specify downloading of original or clean
+        # FCS samples (or both)
+        self.download_version = Tkinter.StringVar()
+        self.download_version.set('clean')
 
         # can't call super on old-style class, call parent init directly
         Tkinter.Frame.__init__(self, master)
@@ -506,6 +516,43 @@ class Application(Tkinter.Frame):
             )
             dl_radio_button.pack(anchor=Tkinter.W)
         download_structure_options_frame.pack(
+            padx=PAD_MEDIUM,
+            pady=(PAD_LARGE, 0),
+            fill='x'
+        )
+
+        download_version_label_frame = Tkinter.Frame(
+            download_options_frame,
+            bg=BACKGROUND_COLOR
+        )
+        download_version_label = Tkinter.Label(
+            download_version_label_frame,
+            text='Choose file types to download:',
+            bg=BACKGROUND_COLOR,
+            width=32,
+            anchor=Tkinter.W
+        )
+        download_version_label.pack(side='left')
+        download_version_label_frame.pack(
+            padx=PAD_MEDIUM,
+            pady=(PAD_LARGE, 0),
+            fill='x'
+        )
+        download_version_options_frame = Tkinter.Frame(
+            download_options_frame,
+            bg=BACKGROUND_COLOR
+        )
+        for text, value in download_version_options:
+            dl_radio_button = Tkinter.Radiobutton(
+                download_version_options_frame,
+                text=text,
+                variable=self.download_version,
+                value=value,
+                bg=BACKGROUND_COLOR,
+                highlightthickness=0
+            )
+            dl_radio_button.pack(anchor=Tkinter.W)
+        download_version_options_frame.pack(
             padx=PAD_MEDIUM,
             pady=(PAD_LARGE, 0),
             fill='x'
