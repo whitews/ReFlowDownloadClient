@@ -881,7 +881,8 @@ class Application(Tkinter.Frame):
         )
         file_list_frame.pack(
             fill='both',
-            expand=True
+            expand=True,
+            pady=(PAD_LARGE, 0)
         )
         file_chooser_frame.pack(
             fill='both',
