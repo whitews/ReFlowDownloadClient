@@ -984,7 +984,8 @@ class Application(Tkinter.Frame):
 
         # update scroll region
         self.file_list_canvas.config(
-            scrollregion=(0, 0, 1000, len(samples) * 20))
+            scrollregion=(0, 0, 1000, 10 + len(samples) * 24)
+        )
 
     def clear_project_filter(self):
         # clearing project filter clears all other filters
