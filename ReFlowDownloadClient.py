@@ -1078,6 +1078,8 @@ class Application(Tkinter.Frame):
         chosen_dir = tkFileDialog.askdirectory(
             initialdir=self.download_parent_dir.get()
         )
+        if not os.access(chosen_dir, os.EX_OK):
+            return
         self.download_parent_dir.set(chosen_dir)
 
     def download_selected(self):
