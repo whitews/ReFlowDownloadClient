@@ -204,7 +204,8 @@ class Application(Tkinter.Frame):
             if not self.token:
                 tkMessageBox.showwarning(
                     'Login Failed',
-                    'Are the hostname, username, and password are correct?')
+                    'Are the hostname, username, and password are correct?'
+                )
                 return
 
             if self.token is not None:
@@ -1082,7 +1083,15 @@ class Application(Tkinter.Frame):
     def download_selected(self):
         parent_dir = self.download_parent_dir.get()
         download_structure = self.download_structure.get()
-        download_version = self.download_version
+        download_version = self.download_version.get()
+
+        # make sure we have write permissions for parent directory
+        if not os.access(parent_dir, os.W_OK):
+            tkMessageBox.showwarning(
+                'Insufficient Permissions',
+                'You do not have permission to write to %s' % parent_dir
+            )
+            return
 
         for k, v in self.file_list_canvas.children.items():
             if isinstance(v, MyCheckbutton):
