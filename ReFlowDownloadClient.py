@@ -593,9 +593,15 @@ class Application(Tkinter.Frame):
         )
         self.project_menu.config(
             bg=BACKGROUND_COLOR,
-            width=36
+            width=28
         )
-        self.project_menu.pack(fill='x', expand=True)
+        self.project_menu.pack(fill='x', expand=True, side='left')
+        clear_project_filter_button = ttk.Button(
+            project_chooser_frame,
+            text='Clear',
+            command=self.clear_project_filter
+        )
+        clear_project_filter_button.pack(side='left')
         project_chooser_frame.pack(fill='x', expand=True)
 
         project_frame.pack(side='top', fill='x', expand=True)
@@ -629,7 +635,13 @@ class Application(Tkinter.Frame):
             ''
         )
         self.site_menu.config(bg=BACKGROUND_COLOR)
-        self.site_menu.pack(fill='x', expand=True)
+        self.site_menu.pack(fill='x', expand=True, side='left')
+        clear_site_filter_button = ttk.Button(
+            site_chooser_frame,
+            text='Clear',
+            command=self.clear_site_filter
+        )
+        clear_site_filter_button.pack(side='left')
         site_chooser_frame.pack(fill='x', expand=True)
 
         site_frame.pack(side='top', fill='x', expand=True)
@@ -663,7 +675,13 @@ class Application(Tkinter.Frame):
             ''
         )
         self.subject_menu.config(bg=BACKGROUND_COLOR)
-        self.subject_menu.pack(fill='x', expand=True)
+        self.subject_menu.pack(fill='x', expand=True, side='left')
+        clear_subject_filter_button = ttk.Button(
+            subject_chooser_frame,
+            text='Clear',
+            command=self.clear_subject_filter
+        )
+        clear_subject_filter_button.pack(side='left')
         subject_chooser_frame.pack(fill='x', expand=True)
 
         subject_frame.pack(side='top', fill='x', expand=True)
@@ -694,7 +712,13 @@ class Application(Tkinter.Frame):
             ''
         )
         self.visit_menu.config(bg=BACKGROUND_COLOR)
-        self.visit_menu.pack(fill='x', expand=True)
+        self.visit_menu.pack(fill='x', expand=True, side='left')
+        clear_visit_filter_button = ttk.Button(
+            visit_chooser_frame,
+            text='Clear',
+            command=self.clear_visit_filter
+        )
+        clear_visit_filter_button.pack(side='left')
         visit_chooser_frame.pack(fill='x', expand=True)
 
         visit_frame.pack(side='top', fill='x', expand=True)
@@ -731,7 +755,13 @@ class Application(Tkinter.Frame):
             ''
         )
         self.panel_template_menu.config(bg=BACKGROUND_COLOR)
-        self.panel_template_menu.pack(fill='x', expand=True)
+        self.panel_template_menu.pack(fill='x', expand=True, side='left')
+        clear_panel_template_filter_button = ttk.Button(
+            panel_template_chooser_frame,
+            text='Clear',
+            command=self.clear_panel_template_filter
+        )
+        clear_panel_template_filter_button.pack(side='left')
         panel_template_chooser_frame.pack(fill='x', expand=True)
 
         panel_template_frame.pack(side='top', fill='x', expand=True)
@@ -768,7 +798,13 @@ class Application(Tkinter.Frame):
             ''
         )
         self.stimulation_menu.config(bg=BACKGROUND_COLOR)
-        self.stimulation_menu.pack(fill='x', expand=True)
+        self.stimulation_menu.pack(fill='x', expand=True, side='left')
+        clear_stimulation_filter_button = ttk.Button(
+            stimulation_chooser_frame,
+            text='Clear',
+            command=self.clear_stimulation_filter
+        )
+        clear_stimulation_filter_button.pack(side='left')
         stimulation_chooser_frame.pack(fill='x', expand=True)
 
         stimulation_frame.pack(side='top', fill='x', expand=True)
@@ -910,6 +946,48 @@ class Application(Tkinter.Frame):
         # update scroll region
         self.file_list_canvas.config(
             scrollregion=(0, 0, 1000, len(samples) * 20))
+
+    def clear_project_filter(self):
+        # clearing project filter clears all other filters
+        self.project_selection.set('')
+        self.site_selection.set('')
+        self.subject_selection.set('')
+        self.visit_selection.set('')
+        self.panel_template_selection.set('')
+        self.stimulation_selection.set('')
+
+        # re-apply filter
+        self.apply_filters()
+
+    def clear_site_filter(self):
+        self.site_selection.set('')
+
+        # re-apply filter
+        self.apply_filters()
+
+    def clear_subject_filter(self):
+        self.subject_selection.set('')
+
+        # re-apply filter
+        self.apply_filters()
+
+    def clear_visit_filter(self):
+        self.visit_selection.set('')
+
+        # re-apply filter
+        self.apply_filters()
+
+    def clear_panel_template_filter(self):
+        self.panel_template_selection.set('')
+
+        # re-apply filter
+        self.apply_filters()
+
+    def clear_stimulation_filter(self):
+        self.stimulation_selection.set('')
+
+        # re-apply filter
+        self.apply_filters()
 
     def select_all_files(self):
         for k, v in self.file_list_canvas.children.items():
