@@ -135,7 +135,8 @@ class Application(Tkinter.Frame):
         self.panel_template_selection = Tkinter.StringVar()
 
         # download options
-        self.download_parent_dir = default_download_parent_dir
+        self.download_parent_dir = Tkinter.StringVar()
+        self.download_parent_dir.set(default_download_parent_dir)
 
         # can't call super on old-style class, call parent init directly
         Tkinter.Frame.__init__(self, master)
@@ -439,14 +440,10 @@ class Application(Tkinter.Frame):
         download_parent_dir_label.pack(side='left')
         download_parent_dir_entry = Tkinter.Entry(
             download_parent_dir_frame,
+            textvariable=self.download_parent_dir,
             highlightbackground=BACKGROUND_COLOR,
             width=24
         )
-        if self.download_parent_dir is not None:
-            download_parent_dir_entry.insert(
-                Tkinter.END,
-                self.download_parent_dir)
-
         download_parent_dir_entry.pack(padx=PAD_SMALL)
         download_parent_dir_frame.pack(pady=PAD_SMALL)
 
