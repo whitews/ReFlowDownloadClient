@@ -44,6 +44,11 @@ default_download_parent_dir = "/".join(
     ]
 )
 
+download_structure_options = [
+    ('Flat', 'flat'),
+    ('Nested', 'nested')
+]
+
 BACKGROUND_COLOR = '#ededed'
 INACTIVE_BACKGROUND_COLOR = '#e2e2e2'
 INACTIVE_FOREGROUND_COLOR = '#767676'
@@ -138,6 +143,9 @@ class Application(Tkinter.Frame):
         # download options
         self.download_parent_dir = Tkinter.StringVar()
         self.download_parent_dir.set(default_download_parent_dir)
+        self.download_structure = Tkinter.StringVar()
+        # default output structure is 'flat'
+        self.download_structure.set('flat')
 
         # can't call super on old-style class, call parent init directly
         Tkinter.Frame.__init__(self, master)
@@ -466,6 +474,42 @@ class Application(Tkinter.Frame):
         choose_download_parent_dir_button.pack(side='left')
         download_dir_entry_frame.pack(pady=PAD_SMALL, fill='x')
 
+        download_structure_label_frame = Tkinter.Frame(
+            download_options_frame,
+            bg=BACKGROUND_COLOR
+        )
+        download_structure_label = Tkinter.Label(
+            download_structure_label_frame,
+            text='Choose download folder structure: ',
+            bg=BACKGROUND_COLOR,
+            width=28,
+            anchor=Tkinter.W
+        )
+        download_structure_label.pack(side='left')
+        download_structure_label_frame.pack(
+            padx=PAD_MEDIUM,
+            pady=(PAD_LARGE, 0),
+            fill='x'
+        )
+        download_structure_options_frame = Tkinter.Frame(
+            download_options_frame,
+            bg=BACKGROUND_COLOR
+        )
+        for text, value in download_structure_options:
+            dl_radio_button = Tkinter.Radiobutton(
+                download_structure_options_frame,
+                text=text,
+                variable=self.download_structure,
+                value=value,
+                bg=BACKGROUND_COLOR,
+                highlightthickness=0
+            )
+            dl_radio_button.pack(anchor=Tkinter.W)
+        download_structure_options_frame.pack(
+            padx=PAD_MEDIUM,
+            pady=(PAD_LARGE, 0),
+            fill='x'
+        )
 
         # overall project frame
         project_frame = Tkinter.Frame(
