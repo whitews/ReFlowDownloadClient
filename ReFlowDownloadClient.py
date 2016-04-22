@@ -870,7 +870,9 @@ class Application(Tkinter.Frame):
         if project_name in self.project_dict:
             project_id = self.project_dict[project_name]
         else:
-            # if we don't get a project ID then there's nothing to do
+            # if we don't get a project ID then there's nothing to do but
+            # clear the canvas
+            self.file_list_canvas.delete(Tkinter.ALL)
             return
 
         site_name = self.site_selection.get()
