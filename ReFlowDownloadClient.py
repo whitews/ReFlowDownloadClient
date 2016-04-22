@@ -77,9 +77,9 @@ LABEL_WIDTH = 16
 
 
 class MyCheckbutton(Tkinter.Checkbutton):
-    def __init__(self, sample_id, *args, **kwargs):
-        # Save the sample ID
-        self.sample_id = sample_id
+    def __init__(self, sample_dict, *args, **kwargs):
+        # Save sample metadata dictionary
+        self.sample_metadata = sample_dict
 
         # we create checkboxes dynamically and need to control the value
         # so we need to access the widget's value using our own attribute
@@ -966,9 +966,8 @@ class Application(Tkinter.Frame):
         self.file_list_canvas.delete(Tkinter.ALL)
 
         for i, s in enumerate(samples):
-            # TODO: need to update MyCheckButton to save all sample metadata
             cb = MyCheckbutton(
-                s['id'],
+                s,
                 self.file_list_canvas,
                 text=os.path.basename(s['original_filename'])
             )
