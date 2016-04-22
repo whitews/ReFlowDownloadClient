@@ -187,18 +187,20 @@ class Application(Tkinter.Frame):
                     'Are the hostname, username, and password are correct?')
                 return
 
-            # if we get here, user was authenticated, cache the host/username
-            # noinspection PyBroadException
-            try:
-                user_settings = {
-                    'host': host_text,
-                    'username': self.username
-                }
-                user_settings_fh = open(user_settings_path, 'w')
-                json.dump(user_settings, user_settings_fh)
-            except Exception:
-                # well, we tried, but don't stop the application
-                pass
+            if self.token is not None:
+                # if we get here, user was authenticated,
+                # cache the host/username
+                # noinspection PyBroadException
+                try:
+                    user_settings = {
+                        'host': host_text,
+                        'username': self.username
+                    }
+                    user_settings_fh = open(user_settings_path, 'w')
+                    json.dump(user_settings, user_settings_fh)
+                except Exception:
+                    # well, we tried, but don't stop the application
+                    pass
 
             self.login_frame.destroy()
             self.master.unbind('<Return>')
