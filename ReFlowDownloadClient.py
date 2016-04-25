@@ -7,6 +7,7 @@ import re
 import sys
 import os
 import json
+import hashlib
 
 import reflowrestclient.utils as rest
 
@@ -1087,6 +1088,40 @@ class Application(Tkinter.Frame):
             return
         self.download_parent_dir.set(chosen_dir)
 
+    @staticmethod
+    def create_sample_directory(
+            parent_dir,
+            sample_metadata,
+            download_structure
+    ):
+        dir_list = [parent_dir]
+
+        if download_structure == 'flat':
+            pass
+        elif download_structure == 'nested_psv':
+            dir_list.extend(
+                [
+                    sample_metadata['project_name'],
+                    sample_metadata['site_name'],
+                    sample_metadata['visit_name']
+                ]
+            )
+        elif download_structure == 'nested_pvs':
+            dir_list.extend(
+                [
+                    sample_metadata['project_name'],
+                    sample_metadata['visit_name'],
+                    sample_metadata['site_name']
+                ]
+            )
+
+        dir_path = "/".join(dir_list)
+
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+
+        return dir_path
+
     def download_selected(self):
         parent_dir = self.download_parent_dir.get()
         download_structure = self.download_structure.get()
@@ -1103,8 +1138,57 @@ class Application(Tkinter.Frame):
         for k, v in self.file_list_canvas.children.items():
             if isinstance(v, MyCheckbutton):
                 if v.is_checked() and v.cget('state') != Tkinter.DISABLED:
-                    # TODO: call REST API download
-                    pass
+                    try:
+                        sample_dir = self.create_sample_directory(
+                            parent_dir,
+                            v.sample_metadata,
+                            download_structure
+                        )
+                    except OSError:
+                        tkMessageBox.showwarning(
+                            'Error creating sub-directory',
+                            'Do have permission to write to %s' % parent_dir
+                        )
+                        return
+
+                    # check if sample exists in path & if it's hash matches
+                    # first, use lexists to avoid clobbering any file/dir/link
+                    # that may exist, we don't want to mess with anything
+                    # on the user's system
+                    sample_path = "/".join(
+                        [
+                            sample_dir,
+                            v.sample_metadata['original_filename']
+                        ]
+                    )
+                    if os.path.lexists(sample_path):
+                        # now check if existing file is identical
+                        sample_file = open(sample_path)
+                        sha1_hash = hashlib.sha1(sample_file.read())
+                        sample_file.close()
+
+                        if sha1_hash.hexdigest() == v.sample_metadata['sha1']:
+                            # don't re-download if identical
+                            continue
+                        else:
+                            # warn user file exists & stop downloading
+                            tkMessageBox.showwarning(
+                                'File Exists',
+                                'File already exists but does not match the '
+                                'file on the ReFlow server. The existing file '
+                                'will have to be deleted in order to download '
+                                'this file.\n%s' % sample_path
+                            )
+                            return
+
+                    # use ReFlow REST API to download sample
+                    rest.download_sample(
+                        self.host,
+                        self.token,
+                        v.sample_metadata['id'],
+                        filename=v.sample_metadata['original_filename'],
+                        directory=sample_dir
+                    )
 
     def load_user_projects(self):
         try:
