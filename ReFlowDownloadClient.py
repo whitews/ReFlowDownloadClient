@@ -983,6 +983,11 @@ class Application(Tkinter.Frame):
         # clear the canvas
         self.file_list_canvas.delete(Tkinter.ALL)
 
+        # but delete seems to just remove the objects displayed, our
+        # check box instances remain, so we need to destroy them
+        for key, cb in self.file_list_canvas.children.items():
+            cb.destroy()
+
         for i, s in enumerate(samples):
             cb = MyCheckbutton(
                 s,
