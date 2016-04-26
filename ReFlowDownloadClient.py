@@ -1122,6 +1122,78 @@ class Application(Tkinter.Frame):
 
         return dir_path
 
+    def _download_sample(self, sample_cb, sample_dir, clean=False):
+        # check if sample exists in path & if it's hash matches
+        # first, use lexists to avoid clobbering any file/dir/link
+        # that may exist, we don't want to mess with anything
+        # on the user's system
+        if clean:
+            pattern = re.compile(r'\.fcs$')
+            orig_file_name = sample_cb.sample_metadata['original_filename']
+            match = pattern.search(orig_file_name.lower())
+
+            if match is not None:
+                file_name = "_".join(
+                    [orig_file_name[0:match.start()], 'clean.fcs']
+                )
+            else:
+                file_name = "_".join([orig_file_name, 'clean.fcs'])
+        else:
+            file_name = sample_cb.sample_metadata['original_filename']
+
+        sample_path = "/".join([sample_dir, file_name])
+
+        if os.path.lexists(sample_path):
+            # check SHA checksum for original file (can't do this for
+            # clean file as the server doesn't have the SHA checksum...the
+            # clean files are generated on the fly
+            if clean:
+                # warn user file exists & stop downloading
+                tkMessageBox.showwarning(
+                    'Clean File Exists',
+                    'Clean file already exists. The existing file '
+                    'will have to be deleted in order to re-download '
+                    'this file.\n%s' % sample_path
+                )
+                return
+
+            # now check if existing original file is identical
+            sample_file = open(sample_path)
+            sha1_hash = hashlib.sha1(sample_file.read())
+            sample_file.close()
+
+            if sha1_hash.hexdigest() == sample_cb.sample_metadata['sha1']:
+                # don't re-download if identical
+                return
+            else:
+                # warn user file exists & stop downloading
+                tkMessageBox.showwarning(
+                    'File Exists',
+                    'File already exists but does not match the '
+                    'file on the ReFlow server. The existing file '
+                    'will have to be deleted in order to download '
+                    'this file.\n%s' % sample_path
+                )
+                return
+
+        # use ReFlow REST API to download sample
+        if clean:
+            rest.download_clean_sample(
+                self.host,
+                self.token,
+                sample_cb.sample_metadata['id'],
+                filename=file_name,
+                directory=sample_dir
+            )
+        else:
+            rest.download_sample(
+                self.host,
+                self.token,
+                sample_cb.sample_metadata['id'],
+                filename=file_name,
+                directory=sample_dir
+            )
+
     def download_selected(self):
         parent_dir = self.download_parent_dir.get()
         download_structure = self.download_structure.get()
@@ -1151,44 +1223,12 @@ class Application(Tkinter.Frame):
                         )
                         return
 
-                    # check if sample exists in path & if it's hash matches
-                    # first, use lexists to avoid clobbering any file/dir/link
-                    # that may exist, we don't want to mess with anything
-                    # on the user's system
-                    sample_path = "/".join(
-                        [
-                            sample_dir,
-                            v.sample_metadata['original_filename']
-                        ]
-                    )
-                    if os.path.lexists(sample_path):
-                        # now check if existing file is identical
-                        sample_file = open(sample_path)
-                        sha1_hash = hashlib.sha1(sample_file.read())
-                        sample_file.close()
-
-                        if sha1_hash.hexdigest() == v.sample_metadata['sha1']:
-                            # don't re-download if identical
-                            continue
-                        else:
-                            # warn user file exists & stop downloading
-                            tkMessageBox.showwarning(
-                                'File Exists',
-                                'File already exists but does not match the '
-                                'file on the ReFlow server. The existing file '
-                                'will have to be deleted in order to download '
-                                'this file.\n%s' % sample_path
-                            )
-                            return
-
-                    # use ReFlow REST API to download sample
-                    rest.download_sample(
-                        self.host,
-                        self.token,
-                        v.sample_metadata['id'],
-                        filename=v.sample_metadata['original_filename'],
-                        directory=sample_dir
-                    )
+                    if download_version in ['both', 'original']:
+                        # download original file
+                        self._download_sample(v, sample_dir)
+                    if download_version in ['both', 'clean']:
+                        # download clean file
+                        self._download_sample(v, sample_dir, clean=True)
 
     def load_user_projects(self):
         try:
