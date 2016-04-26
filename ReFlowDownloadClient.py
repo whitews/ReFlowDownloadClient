@@ -1207,9 +1207,18 @@ class Application(Tkinter.Frame):
             )
             return
 
+        # determine download count to setup progress bar
+        download_count = 0
         for k, v in self.file_list_canvas.children.items():
             if isinstance(v, MyCheckbutton):
-                if v.is_checked() and v.cget('state') != Tkinter.DISABLED:
+                if v.is_checked():
+                    download_count += 1
+
+        self.download_progress_bar.config(maximum=download_count)
+
+        for k, v in self.file_list_canvas.children.items():
+            if isinstance(v, MyCheckbutton):
+                if v.is_checked():
                     try:
                         sample_dir = self.create_sample_directory(
                             parent_dir,
@@ -1229,6 +1238,10 @@ class Application(Tkinter.Frame):
                     if download_version in ['both', 'clean']:
                         # download clean file
                         self._download_sample(v, sample_dir, clean=True)
+
+                    # update progress bar
+                    self.download_progress_bar.step()
+                    self.download_progress_bar.update()
 
     def load_user_projects(self):
         try:
